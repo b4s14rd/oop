@@ -12,16 +12,16 @@ public class DialogLogicTest {
 
         String response = logic.processInput("\\help");
 
-        System.out.println("=== Тест 1: Команда \\help ===");
+        System.out.println("Тест 1: Команда \\help : ");
         System.out.println("Ввод: \\help");
         System.out.println("Вывод бота:");
         System.out.println(response);
         System.out.println();
 
         if (response.contains("Доступные команды") && response.contains("\\help")) {
-            System.out.println("✅ Тест пройден - \\help работает правильно");
+            System.out.println("Тест пройден - \\help работает правильно");
         } else {
-            System.out.println("❌ Тест не пройден");
+            System.out.println("Тест не пройден");
         }
         System.out.println();
     }
@@ -30,7 +30,7 @@ public class DialogLogicTest {
         QuestionRepository repository = new QuestionRepository("test_data.txt");
         DialogLogic logic = new DialogLogic(repository);
 
-        System.out.println("=== Тест 2: Команды вопросов ===");
+        System.out.println("Тест 2: Команды вопросов : ");
 
         System.out.println("Ввод: вопрос 1");//правильная
         String validResponse = logic.processInput("вопрос 1");
@@ -45,9 +45,9 @@ public class DialogLogicTest {
         System.out.println();
 
         if (validResponse.contains("Вопрос:") && invalidResponse.contains("не найден")) {
-            System.out.println("✅ Тест пройден - команды вопросов работают правильно");
+            System.out.println("Тест пройден - команды вопросов работают правильно");
         } else {
-            System.out.println("❌ Тест не пройден");
+            System.out.println("Тест не пройден");
         }
         System.out.println();
     }
@@ -56,7 +56,7 @@ public class DialogLogicTest {
         QuestionRepository repository = new QuestionRepository("test_data.txt");
         DialogLogic logic = new DialogLogic(repository);
 
-        System.out.println("=== Тест 3: Работа кода ===");
+        System.out.println("Тест 3: Работа кода : ");
 
         System.out.println("Ввод: unknown");//неизвестная команда
         String unknownResponse = logic.processInput("unknown");
@@ -73,9 +73,9 @@ public class DialogLogicTest {
         System.out.println("Программа работает после выхода: " + wasRunning);
 
         if (unknownResponse.contains("Неизвестная команда") && !wasRunning) {
-            System.out.println("✅ Тест пройден - код работает правильно, ураураураура");
+            System.out.println("Тест пройден - код работает правильно, ураураураура");
         } else {
-            System.out.println("❌ Тест не пройден");
+            System.out.println("Тест не пройден");
         }
     }
 }
