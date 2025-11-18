@@ -9,7 +9,7 @@ public class DialogLogic {
         this.isRunning = true;
     }
 
-    public String processInput(String input) {
+    public String processInput(String input) {//обрабатывает команды пользователя
         if (input.equals("\\help")) {
             return getHelpText();
         } else if (input.equalsIgnoreCase("список")) {
@@ -28,12 +28,12 @@ public class DialogLogic {
         return isRunning;
     }
 
-    public String getWelcomeMessage() {
+    public String getWelcomeMessage() {//приветствие при старте
         return "Добро пожаловать в систему консультаций по патчингу инструкций!\n" +
                 "Введите '\\help' для просмотра доступных команд.";
     }
 
-    public String getQuestionsListText() {
+    public String getQuestionsListText() {//показывает список вопросов
         Map<Integer, QuestionRepository.Question> questions = questionRepository.getQuestions();
         if (questions.isEmpty()) {
             return "Нет доступных вопросов.";
@@ -46,7 +46,7 @@ public class DialogLogic {
         return sb.toString();
     }
 
-    private String getHelpText() {
+    private String getHelpText() {//справка по командам
         return "Я консультационная система по патчингу инструкций. \n\n" +
                 "Доступные команды:\n" +
                 "\\help - показать эту справку\n" +
@@ -60,7 +60,7 @@ public class DialogLogic {
                 "4. Для выхода введите 'выход'";
     }
 
-    private String handleQuestionCommand(String command) {
+    private String handleQuestionCommand(String command) {//обрабатывает команду "вопрос"
         String[] parts = command.split(" ");
         if (parts.length != 2) {
             return "Использование: вопрос <номер>";
