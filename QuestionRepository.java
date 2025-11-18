@@ -6,13 +6,13 @@ public class QuestionRepository {
     private Map<Integer, Question> questions;
     private String dataFile;
 
-    public QuestionRepository(String dataFilePath) {
+    public QuestionRepository(String dataFilePath) {//загружает вопросы из файла
         this.dataFile = dataFilePath;
         this.questions = new HashMap<>();
         loadDataFromFile();
     }
 
-    private void loadDataFromFile() {
+    private void loadDataFromFile() {//читает файл с вопросами
         try {
             File file = new File(dataFile);
 
@@ -46,7 +46,7 @@ public class QuestionRepository {
         }
     }
 
-    private void createDefaultDataFile() {
+    private void createDefaultDataFile() {//создает файл если его нет
         try {
             String defaultContent =
                     "1|Что такое патчинг инструкций?|Патчинг инструкций - это модификация машинного кода программы во время выполнения.\n\n" +
@@ -63,11 +63,11 @@ public class QuestionRepository {
 
     public Map<Integer, Question> getQuestions() {
         return new HashMap<>(questions);
-    }
+    }//возвращает все вопросы
 
     public Question getQuestion(int id) {
         return questions.get(id);
-    }
+    }//возвращает вопрос по номеру
 
     public static class Question {
         private String title;
