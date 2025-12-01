@@ -34,30 +34,33 @@ public class DialogLogic {
     }
 
     public String getQuestionsListText() {//показывает список вопросов
-        Map<Integer, QuestionRepository.Question> questions = questionRepository.getQuestions();
+        Map<Integer, Question> questions = questionRepository.getQuestions(); // Использован внешний класс Question
         if (questions.isEmpty()) {
             return "Нет доступных вопросов.";
         }
 
         StringBuilder sb = new StringBuilder("Доступные вопросы:\n");
-        for (Map.Entry<Integer, QuestionRepository.Question> entry : questions.entrySet()) {
+        for (Map.Entry<Integer, Question> entry : questions.entrySet()) { // Использован внешний класс Question
             sb.append(entry.getKey()).append(". ").append(entry.getValue().getTitle()).append("\n");
         }
         return sb.toString();
     }
 
-    private String getHelpText() {//справка по командам
-        return "Я консультационная система по патчингу инструкций. \n\n" +
-                "Доступные команды:\n" +
-                "\\help - показать эту справку\n" +
-                "список - показать все доступные вопросы\n" +
-                "вопрос <номер> - показать вопрос с указанным номером\n" +
-                "выход - завершить работу программы\n\n" +
-                "Как взаимодействовать:\n" +
-                "1. Введите 'список' чтобы увидеть все вопросы\n" +
-                "2. Введите 'вопрос <номер>' чтобы посмотреть конкретный вопрос\n" +
-                "3. В любой момент можно ввести '\\help' для справки\n" +
-                "4. Для выхода введите 'выход'";
+    private String getHelpText() {//справка по командам (Text Block)
+        return """
+               Я консультационная система по патчингу инструкций.
+
+               Доступные команды:
+               \\help - показать эту справку
+               список - показать все доступные вопросы
+               вопрос <номер> - показать вопрос с указанным номером
+               выход - завершить работу программы
+
+               Как взаимодействовать:
+               1. Введите 'список' чтобы увидеть все вопросы
+               2. Введите 'вопрос <номер>' чтобы посмотреть конкретный вопрос
+               3. В любой момент можно ввести '\\help' для справки
+               4. Для выхода введите 'выход'""";
     }
 
     private String handleQuestionCommand(String command) {//обрабатывает команду "вопрос"
@@ -68,7 +71,7 @@ public class DialogLogic {
 
         try {
             int questionNumber = Integer.parseInt(parts[1]);
-            QuestionRepository.Question question = questionRepository.getQuestion(questionNumber);
+            Question question = questionRepository.getQuestion(questionNumber); // Использован внешний класс Question
 
             if (question != null) {
                 return "Вопрос: " + question.getTitle() + "\n\n" + question.getAnswer();
