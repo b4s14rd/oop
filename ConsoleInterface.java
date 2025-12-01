@@ -5,7 +5,7 @@ public class ConsoleInterface {
     private Scanner scanner;
 
     public ConsoleInterface(DialogLogic logic) {
-        this.dialogLogic = logic;
+        this.dialogLogic = logic;//
         this.scanner = new Scanner(System.in);
     }
 
