@@ -34,19 +34,19 @@ public class DialogLogic {
     }
 
     public String getQuestionsListText() {//показывает список вопросов
-        Map<Integer, Question> questions = questionRepository.getQuestions(); // Использован внешний класс Question
+        Map<Integer, Question> questions = questionRepository.getQuestions(); //ипользован внешний (!!!!!!!!!!) класс Question
         if (questions.isEmpty()) {
             return "Нет доступных вопросов.";
         }
 
         StringBuilder sb = new StringBuilder("Доступные вопросы:\n");
-        for (Map.Entry<Integer, Question> entry : questions.entrySet()) { // Использован внешний класс Question
+        for (Map.Entry<Integer, Question> entry : questions.entrySet()) { //использован внешний (!!!) класс Question
             sb.append(entry.getKey()).append(". ").append(entry.getValue().getTitle()).append("\n");
         }
         return sb.toString();
     }
 
-    private String getHelpText() {//справка по командам (Text Block)
+    private String getHelpText() {//справка по командам (Text Block) очень его любим
         return """
                Я консультационная система по патчингу инструкций.
 
@@ -71,7 +71,7 @@ public class DialogLogic {
 
         try {
             int questionNumber = Integer.parseInt(parts[1]);
-            Question question = questionRepository.getQuestion(questionNumber); // Использован внешний класс Question
+            Question question = questionRepository.getQuestion(questionNumber);
 
             if (question != null) {
                 return "Вопрос: " + question.getTitle() + "\n\n" + question.getAnswer();
