@@ -8,11 +8,11 @@ public class QuestionRepository {
 
     public QuestionRepository(String dataFilePath) {//загружает вопросы из файла
         this.dataFile = dataFilePath;
-        this.questions = loadDataFromFile(); // Инициализируем поле результатом метода
+        this.questions = loadDataFromFile(); //инициализируем поле результатом метода
     }
 
     private Map<Integer, Question> loadDataFromFile() {//читает файл с вопросами и возвращает Map
-        Map<Integer, Question> loadedQuestions = new HashMap<>(); // Локальная переменная
+        Map<Integer, Question> loadedQuestions = new HashMap<>(); //ллллллллллокальная переменная
 
         try {
             File file = new File(dataFile);
@@ -21,7 +21,6 @@ public class QuestionRepository {
                 createDefaultDataFile();
             }
 
-            // Если файл все еще не существует после попытки создания, возвращаем пустой Map
             if (!file.exists()) {
                 return loadedQuestions;
             }
@@ -39,14 +38,14 @@ public class QuestionRepository {
                         String title = parts[1].trim();
                         String answer = parts[2].trim();
                         answer = answer.replace("\\n", "\n");
-                        loadedQuestions.put(id, new Question(title, answer)); // Заполняем локальную Map
+                        loadedQuestions.put(id, new Question(title, answer)); //заполняем локал Map
                     } catch (NumberFormatException e) {
                         System.out.println("Ошибка формата ID в строке: " + line);
                     }
                 }
             }
 
-            return loadedQuestions; // Возвращаем собранные данные
+            return loadedQuestions; //возвращаем собранные данные
 
         } catch (IOException e) {
             System.out.println("Ошибка загрузки данных из файла: " + e.getMessage());
@@ -62,7 +61,6 @@ public class QuestionRepository {
                             "3|Для чего используется патчинг?|Патчинг используется для:\n- Отладки\n- Модификации поведения\n- Исправления багов\n- Анализа безопасности";
 
             Files.write(Paths.get(dataFile), defaultContent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-            // Убран вызов loadDataFromFile(), так как его выполнит конструктор
         } catch (IOException e) {
             System.out.println("Ошибка создания файла: " + e.getMessage());
         }
@@ -75,6 +73,4 @@ public class QuestionRepository {
     public Question getQuestion(int id) {
         return questions.get(id);
     }//возвращает вопрос по номеру
-
-    // Внутренний класс Question УДАЛЕН.
 }
