@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class DialogLogic {
-    private QuestionRepository questionRepository;
+    private QuestionRepository questionRepository;//
     private boolean isRunning;
 
     public DialogLogic(QuestionRepository repository) {
