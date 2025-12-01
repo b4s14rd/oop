@@ -8,17 +8,22 @@ public class QuestionRepository {
 
     public QuestionRepository(String dataFilePath) {//загружает вопросы из файла
         this.dataFile = dataFilePath;
-        this.questions = new HashMap<>();
-        loadDataFromFile();
+        this.questions = loadDataFromFile(); // Инициализируем поле результатом метода
     }
 
-    private void loadDataFromFile() {//читает файл с вопросами
+    private Map<Integer, Question> loadDataFromFile() {//читает файл с вопросами и возвращает Map
+        Map<Integer, Question> loadedQuestions = new HashMap<>(); // Локальная переменная
+
         try {
             File file = new File(dataFile);
 
             if (!file.exists()) {
                 createDefaultDataFile();
-                return;
+            }
+
+            // Если файл все еще не существует после попытки создания, возвращаем пустой Map
+            if (!file.exists()) {
+                return loadedQuestions;
             }
 
             List<String> lines = Files.readAllLines(file.toPath(), java.nio.charset.StandardCharsets.UTF_8);
@@ -34,15 +39,18 @@ public class QuestionRepository {
                         String title = parts[1].trim();
                         String answer = parts[2].trim();
                         answer = answer.replace("\\n", "\n");
-                        questions.put(id, new Question(title, answer));
+                        loadedQuestions.put(id, new Question(title, answer)); // Заполняем локальную Map
                     } catch (NumberFormatException e) {
                         System.out.println("Ошибка формата ID в строке: " + line);
                     }
                 }
             }
 
+            return loadedQuestions; // Возвращаем собранные данные
+
         } catch (IOException e) {
             System.out.println("Ошибка загрузки данных из файла: " + e.getMessage());
+            return loadedQuestions;
         }
     }
 
@@ -54,8 +62,7 @@ public class QuestionRepository {
                             "3|Для чего используется патчинг?|Патчинг используется для:\n- Отладки\n- Модификации поведения\n- Исправления багов\n- Анализа безопасности";
 
             Files.write(Paths.get(dataFile), defaultContent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-            loadDataFromFile();
-
+            // Убран вызов loadDataFromFile(), так как его выполнит конструктор
         } catch (IOException e) {
             System.out.println("Ошибка создания файла: " + e.getMessage());
         }
@@ -69,16 +76,5 @@ public class QuestionRepository {
         return questions.get(id);
     }//возвращает вопрос по номеру
 
-    public static class Question {
-        private String title;
-        private String answer;
-
-        public Question(String title, String answer) {
-            this.title = title;
-            this.answer = answer;
-        }
-
-        public String getTitle() { return title; }
-        public String getAnswer() { return answer; }
-    }
+    // Внутренний класс Question УДАЛЕН.
 }
