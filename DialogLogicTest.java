@@ -7,7 +7,7 @@ public class DialogLogicTest {
     }
 
     public static void testHelpCommand() {//тест 1 проверка \help
-        QuestionRepository repository = new QuestionRepository("test_data.txt");
+        QuestionRepository repository = new QuestionRepository("test_data.txt");//
         DialogLogic logic = new DialogLogic(repository);
 
         String response = logic.processInput("\\help");
