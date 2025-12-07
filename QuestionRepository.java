@@ -1,4 +1,6 @@
-import java.io.*;//
+package ru.app.consultation;
+
+import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
@@ -6,13 +8,13 @@ public class QuestionRepository {
     private Map<Integer, Question> questions;
     private String dataFile;
 
-    public QuestionRepository(String dataFilePath) {//загружает вопросы из файла
+    public QuestionRepository(String dataFilePath) {
         this.dataFile = dataFilePath;
-        this.questions = loadDataFromFile(); //инициализируем поле результатом метода
+        this.questions = loadDataFromFile();
     }
 
-    private Map<Integer, Question> loadDataFromFile() {//читает файл с вопросами и возвращает Map
-        Map<Integer, Question> loadedQuestions = new HashMap<>(); //ллллллллллокальная переменная
+    private Map<Integer, Question> loadDataFromFile() {
+        Map<Integer, Question> loadedQuestions = new HashMap<>();
 
         try {
             File file = new File(dataFile);
@@ -38,22 +40,22 @@ public class QuestionRepository {
                         String title = parts[1].trim();
                         String answer = parts[2].trim();
                         answer = answer.replace("\\n", "\n");
-                        loadedQuestions.put(id, new Question(title, answer)); //заполняем локал Map
+                        loadedQuestions.put(id, new Question(title, answer));
                     } catch (NumberFormatException e) {
                         System.out.println("Ошибка формата ID в строке: " + line);
                     }
                 }
             }
 
-            return loadedQuestions; //возвращаем собранные данные
+            return loadedQuestions;
 
-        } catch (IOException e) {
+        } catch (IOException e) {//тяжело, оч тяжело
             System.out.println("Ошибка загрузки данных из файла: " + e.getMessage());
             return loadedQuestions;
         }
     }
 
-    private void createDefaultDataFile() {//создает файл если его нет
+    private void createDefaultDataFile() {
         try {
             String defaultContent =
                     "1|Что такое патчинг инструкций?|Патчинг инструкций - это модификация машинного кода программы во время выполнения.\n\n" +
@@ -68,9 +70,10 @@ public class QuestionRepository {
 
     public Map<Integer, Question> getQuestions() {
         return new HashMap<>(questions);
-    }//возвращает все вопросы
+    }
 
     public Question getQuestion(int id) {
         return questions.get(id);
-    }//возвращает вопрос по номеру
+    }
 }
+//загружает вопросы и ответы из текстового файла (instruction_patching_data.txt) в оперативную память и предоставляет методы для их получения
