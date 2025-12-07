@@ -4,6 +4,9 @@ out/
 !**/src/test/**/out/
 .kotlin
 
+### Тут будет Maven-дубликат кода ###
+target/
+
 ### Eclipse ###
 .apt_generated
 .classpath
