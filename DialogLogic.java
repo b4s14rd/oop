@@ -1,7 +1,9 @@
+package ru.app.consultation;
+
 import java.util.*;
 
 public class DialogLogic {
-    private QuestionRepository questionRepository;//
+    private QuestionRepository questionRepository;
     private boolean isRunning;
 
     public DialogLogic(QuestionRepository repository) {
@@ -9,64 +11,99 @@ public class DialogLogic {
         this.isRunning = true;
     }
 
-    public String processInput(String input) {//обрабатывает команды пользователя
-        if (input.equals("\\help")) {
-            return getHelpText();
+    public BotResponse processInput(String input) {
+        String responseText;
+        List<List<String>> keyboard = List.of(List.of("список", "/help", "выход"));
+
+        if (input.equals("/help") || input.equals("\\help")) {
+            responseText = getHelpText();
         } else if (input.equalsIgnoreCase("список")) {
-            return getQuestionsListText();
+            return getQuestionsListResponse();
         } else if (input.startsWith("вопрос")) {
-            return handleQuestionCommand(input);
+            responseText = handleQuestionCommand(input);
         } else if (input.equalsIgnoreCase("выход")) {
             isRunning = false;
-            return "До свидания!";
+            responseText = "До свидания! (Бот остановлен)";
+            keyboard = List.of();
         } else {
-            return "Неизвестная команда. Введите '\\help' для справки.";
+            responseText = "Неизвестная команда. Введите /help для справки.";
         }
+
+        return new BotResponse(responseText, keyboard);
     }
 
     public boolean isRunning() {
         return isRunning;
     }
 
-    public String getWelcomeMessage() {//приветствие при старте
-        return "Добро пожаловать в систему консультаций по патчингу инструкций!\n" +
-                "Введите '\\help' для просмотра доступных команд.";
+    public String getWelcomeMessage() {
+        return "<b>Добро пожаловать в систему консультаций по патчингу инструкций!</b>\n" +
+                "Введите /help для просмотра доступных команд.";
     }
 
-    public String getQuestionsListText() {//показывает список вопросов
-        Map<Integer, Question> questions = questionRepository.getQuestions(); //ипользован внешний (!!!!!!!!!!) класс Question
+    public BotResponse getQuestionsListResponse() {
+        Map<Integer, Question> questions = questionRepository.getQuestions();
+        if (questions.isEmpty()) {
+            return new BotResponse("Нет доступных вопросов.");
+        }
+
+        StringBuilder sb = new StringBuilder("<b>Доступные вопросы:</b>\n");
+        List<List<String>> keyboard = new ArrayList<>();
+        List<String> row = new ArrayList<>();
+
+        for (Map.Entry<Integer, Question> entry : questions.entrySet()) {
+            sb.append(entry.getKey()).append(". ").append(entry.getValue().getTitle()).append("\n");
+
+            String buttonText = "вопрос " + entry.getKey();
+            row.add(buttonText);
+
+            if (row.size() == 2) {
+                keyboard.add(row);
+                row = new ArrayList<>();
+            }
+        }
+        if (!row.isEmpty()) {
+            keyboard.add(row);
+        }
+
+        keyboard.add(List.of("/help", "выход"));
+
+        return new BotResponse(sb.toString(), keyboard);
+    }
+
+    private String getQuestionsListText() {
+        Map<Integer, Question> questions = questionRepository.getQuestions();
         if (questions.isEmpty()) {
             return "Нет доступных вопросов.";
         }
 
         StringBuilder sb = new StringBuilder("Доступные вопросы:\n");
-        for (Map.Entry<Integer, Question> entry : questions.entrySet()) { //использован внешний (!!!) класс Question
+        for (Map.Entry<Integer, Question> entry : questions.entrySet()) {
             sb.append(entry.getKey()).append(". ").append(entry.getValue().getTitle()).append("\n");
         }
         return sb.toString();
     }
 
-    private String getHelpText() {//справка по командам (Text Block) очень его любим
+    private String getHelpText() {
         return """
-               Я консультационная система по патчингу инструкций.
+               <b>Я консультационная система по патчингу инструкций.</b>
 
-               Доступные команды:
-               \\help - показать эту справку
-               список - показать все доступные вопросы
-               вопрос <номер> - показать вопрос с указанным номером
+               <b>Доступные команды:</b>
+               /help - показать эту справку
+               список - показать все доступные вопросы (кнопками)
+               вопрос (номер) - показать вопрос с указанным номером
                выход - завершить работу программы
 
                Как взаимодействовать:
                1. Введите 'список' чтобы увидеть все вопросы
-               2. Введите 'вопрос <номер>' чтобы посмотреть конкретный вопрос
-               3. В любой момент можно ввести '\\help' для справки
-               4. Для выхода введите 'выход'""";
+               2. Введите 'вопрос (номер)' чтобы посмотреть конкретный вопрос
+               3. Для выхода введите 'выход'""";
     }
 
-    private String handleQuestionCommand(String command) {//обрабатывает команду "вопрос"
+    private String handleQuestionCommand(String command) {
         String[] parts = command.split(" ");
         if (parts.length != 2) {
-            return "Использование: вопрос <номер>";
+            return "Использование: вопрос (номер)";
         }
 
         try {
@@ -74,12 +111,19 @@ public class DialogLogic {
             Question question = questionRepository.getQuestion(questionNumber);
 
             if (question != null) {
-                return "Вопрос: " + question.getTitle() + "\n\n" + question.getAnswer();
+                String answerContent = question.getAnswer();//экранируем все < и > (включая <адрес>)
+
+                answerContent = answerContent.replace("<", "&lt;").replace(">", "&gt;");
+
+                return "<b>Вопрос:</b> " + question.getTitle() + "\n\n"//оборачиваем безопасный контент в <pre> для сохранения форматирования
+                        + "<pre>" + answerContent + "</pre>";
+
             } else {
                 return "Вопрос с номером " + questionNumber + " не найден.\n" + getQuestionsListText();
             }
         } catch (NumberFormatException e) {
-            return "Неверный формат номера вопроса. Используйте: вопрос <номер>";
+            return "Неверный формат номера вопроса. Используйте: вопрос (номер)";
         }
     }
 }
+//принимает очищенный пользовательский ввод, определяет, какая команда была вызвана (/help, список, вопрос), и генерирует соответствующий ответ
