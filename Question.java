@@ -1,4 +1,6 @@
-public class Question {//
+package ru.app.consultation;
+
+public class Question {
     private String title;
     private String answer;
 
@@ -10,3 +12,4 @@ public class Question {//
     public String getTitle() { return title; }
     public String getAnswer() { return answer; }
 }
+//хранение структуры одного вопроса и ответа в памяти
