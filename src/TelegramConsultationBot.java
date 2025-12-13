@@ -9,8 +9,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.ArrayList;
 import java.util.List;
 
-//основной класс тг бота, обрабатывающий входящие сообщения и использующий DialogLogic для получения ответов
-public class TelegramConsultationBot extends TelegramLongPollingBot {
+public class TelegramConsultationBot extends TelegramLongPollingBot {//основной класс тг бота, обрабатывающий входящие сообщения и использующий DialogLogic для получения ответов
 
     private final DialogLogic dialogLogic;
     private static final String BOT_TOKEN = "8510472348:AAEduNxBNasRNUWvkgS9Lf1Eo0OIdFBbRe4";
