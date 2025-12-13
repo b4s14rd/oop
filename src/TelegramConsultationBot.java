@@ -12,8 +12,8 @@ import java.util.List;
 public class TelegramConsultationBot extends TelegramLongPollingBot {//основной класс тг бота, обрабатывающий входящие сообщения и использующий DialogLogic для получения ответов
 
     private final DialogLogic dialogLogic;
-    private static final String BOT_TOKEN = "8510472348:AAEduNxBNasRNUWvkgS9Lf1Eo0OIdFBbRe4";
-    private static final String BOT_USERNAME = "@PatchingConsultationBot";
+    private static final String BOT_TOKEN = System.getenv("BOT_TOKEN");
+    private static final String BOT_USERNAME = System.getenv("BOT_USERNAME");
 
     public TelegramConsultationBot(DialogLogic dialogLogic) {
         this.dialogLogic = dialogLogic;
