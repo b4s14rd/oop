@@ -10,11 +10,12 @@ public class GoogleSheetsExporter {
 
     public static void exportData(ApplicationForm form) {
         String json = String.format(
-                "{\"source\":\"%s\", \"tgId\":\"%s\", \"name\":\"%s\", \"email\":\"%s\", \"goal\":\"%s\"}",
+                "{\"source\":\"%s\", \"tgId\":\"%s\", \"name\":\"%s\", \"email\":\"%s\", \"city\":\"%s\", \"goal\":\"%s\"}",
                 BOT_SOURCE,
                 "@" + form.getTelegramUsername(),
                 form.getName(),
                 form.getEmail(),
+                form.getCity(),
                 form.getGoal()
         );
 
