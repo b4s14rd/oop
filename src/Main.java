@@ -4,7 +4,6 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 public class Main {
     public static void main(String[] args) {
-        SQLiteExporter.initialize();//сначала подготавливаем базу данных SQLite (те создаем файл и таблицу)
 
         String dataFilePath = "instruction_patching_data.txt";
 

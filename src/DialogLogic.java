@@ -3,7 +3,7 @@ import java.util.*;
 public class DialogLogic {
     private QuestionRepository questionRepository;
     private boolean isRunning;//флаг который используется для проверки состояния бота
-    private Map<Long, ApplicationForm> activeForms = new HashMap<>();//хранилище активных анкет. Ключ - Chat ID пользователя (Map хранит активные анкеты: ключ - ID чата, значение - объект с ответами этого юзера)
+    private Map<Long, ApplicationForm> activeForms = new HashMap<>();//хранилище активных анкет. Ключ - Chat ID пользователя
 
     public DialogLogic(QuestionRepository repository) {
         this.questionRepository = repository;
@@ -50,7 +50,9 @@ public class DialogLogic {
         String responseText = form.processAnswer(input);//передаем ввод юзера в анкету, она сама поймет, на какой вопрос это ответ
 
         if (form.isCompleted()) {//проверяем, ответил ли юзер на все вопросы (шаг 4 и >)
-            SQLiteExporter.exportData(form);//когда анкета готова, сохраняем её в SQLite
+
+            GoogleSheetsExporter.exportData(form);//отправка в гт
+
             activeForms.remove(chatId);//удаляем анкету из памяти, чтобы юзер мог начать новую позже
             return new BotResponse(responseText, List.of(List.of("список", "курс", "выход")));
         }
@@ -153,7 +155,7 @@ public class DialogLogic {
                 answerContent = answerContent.replace("<", "&lt;").replace(">", "&gt;");
 
                 return "<b>Вопрос:</b> " + question.getTitle() + "\n\n"//оборачиваем безопасный контент в <pre> для сохранения форматирования
-                        + "<pre>" + answerContent + "</pre>";//(доп) оборачиваем в <pre> чтобы внутри тг текст выглядел нормально со всеми отступами
+                        + "<pre>" + answerContent + "</pre>";
 
             } else {
                 return "Вопрос с номером " + questionNumber + " не найден.\n" + getQuestionsListText();
@@ -163,4 +165,3 @@ public class DialogLogic {
         }
     }
 }
-//принимает очищенный пользовательский ввод, определяет, какая команда была вызвана (/help, список, вопрос), и генерирует соответствующий ответ
