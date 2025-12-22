@@ -4,7 +4,7 @@ public class ApplicationForm {
     private String email;
     private String city;
     private String goal;
-    private int step;//шаг заполнения анкеты
+    private int step; //шаг заполнения анкеты
 
     public ApplicationForm(String telegramUsername) {
         this.telegramUsername = telegramUsername;
@@ -12,7 +12,7 @@ public class ApplicationForm {
     }
 
     public String getCurrentQuestion() {
-        switch (step) {//смотрим на каком мы шаге, и записываем ответ в нужное поле
+        switch (step) { //смотрим на каком мы шаге, и возвращаем текст вопроса
             case 1: return "Введите ваше <b>Имя</b>:";
             case 2: return "Введите ваш <b>Email</b>:";
             case 3: return "Из какого вы <b>Города</b>?";
@@ -24,9 +24,9 @@ public class ApplicationForm {
     public String processAnswer(String answer) {
         switch (step) {
             case 1:
-                this.name = answer.trim();//убираем лишние пробелы в начале/конце
-                step++;//переходим к следующему шагу
-                return getCurrentQuestion();//текст для следующего вопроса
+                this.name = answer.trim(); //убираем лишние пробелы в начале/конце
+                step++; //переходим к следующему шагу
+                return getCurrentQuestion(); //текст для следующего вопроса
             case 2:
                 this.email = answer.trim();
                 step++;
@@ -38,13 +38,13 @@ public class ApplicationForm {
             case 4:
                 this.goal = answer.trim();
                 step++;
-                return "Спасибо, <b>" + name + "</b>! Заявка принята. Данные сохранены в систему.";//финальное сообщение
+                return "Спасибо, <b>" + name + "</b>! Заявка принята. Данные сохранены в систему."; // финальное сообщение
             default:
                 return "Анкета уже заполнена.";
         }
     }
 
-    public boolean isCompleted() {//метод проверяет если шаг больше 4, значит все вопросы эта, все хорошо с ними, на все ответили
+    public boolean isCompleted() { //метод проверяет на все ли вопросы ответили
         return step > 4;
     }
 
