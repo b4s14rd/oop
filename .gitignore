@@ -13,6 +13,7 @@ target/
 leads.db
 missing_file.txt
 test_data.txt
+credentials.json
 
 ### Eclipse ###
 .apt_generated
