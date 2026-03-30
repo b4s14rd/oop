@@ -35,11 +35,16 @@ public class TelegramConsultationBot extends TelegramLongPollingBot {//осно�
             String userInput = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
 
+            String username = update.getMessage().getFrom().getUserName();//получаем имя пользователя для анкеты
+            if (username == null) {//если юза нет, используем chatId
+                username = String.valueOf(chatId);
+            }
+
             if (userInput.equalsIgnoreCase("/start")) {//отправляем приветственное сообщение и список вопросов при старте
-                sendResponse(chatId, new BotResponse(dialogLogic.getWelcomeMessage()));
-                sendResponse(chatId, dialogLogic.getQuestionsListResponse());
+                sendResponse(chatId, new BotResponse(dialogLogic.getWelcomeMessage()));//сразу после приветствия предлагаем записаться на курс
+                sendResponse(chatId, dialogLogic.askForCourseEnrollment());
             } else {//обрабатываем ввод через DialogLogic
-                BotResponse botResponse = dialogLogic.processInput(userInput);//бот передает текст (userInput) в dialogLogic.processInput() и получает готовый BotResponse
+                BotResponse botResponse = dialogLogic.processInput(userInput, chatId, username);//передаем чатид и юз в логику для обработки анкеты
                 sendResponse(chatId, botResponse);//полученный ответ передается в метод sendResponse()
             }
         }
@@ -49,7 +54,7 @@ public class TelegramConsultationBot extends TelegramLongPollingBot {//осно�
         SendMessage message = new SendMessage();
         message.setChatId(chatId);//создается объект SendMessage с нужным chatId (кому отправлять) и текстом
         message.setText(response.getText());
-        message.setParseMode("HTML"); //включаем HTML разметку для жирного шрифта
+        message.setParseMode("HTML");//включаем HTML разметку для жирного шрифта
 
         if (!response.getKeyboardButtons().isEmpty()) {//если в BotResponse есть кнопки (!response.getKeyboardButtons()(список списков, который содержит все данные для кнопок).isEmpty()), вызывается метод createKeyboard() для их создания
             message.setReplyMarkup(createKeyboard(response.getKeyboardButtons()));

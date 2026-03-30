@@ -4,6 +4,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 public class Main {
     public static void main(String[] args) {
+
         String dataFilePath = "instruction_patching_data.txt";
 
         QuestionRepository repository = new QuestionRepository(dataFilePath);//инициализация логики

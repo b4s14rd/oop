@@ -9,6 +9,12 @@ out/
 ### Тут будет Maven-дубликат кода ###
 target/
 
+###Лишние файлы, которые пока что не используются###
+leads.db
+missing_file.txt
+test_data.txt
+credentials.json
+
 ### Eclipse ###
 .apt_generated
 .classpath
