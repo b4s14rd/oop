@@ -1,24 +1,27 @@
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 public class Main {
     public static void main(String[] args) {
 
-        String dataFilePath = "instruction_patching_data.txt";
+        DefaultBotOptions options = ProxyConfig.getOptions();
 
-        QuestionRepository repository = new QuestionRepository(dataFilePath);//инициализация логики
+        String dataFilePath = "instruction_patching_data.txt";
+        QuestionRepository repository = new QuestionRepository(dataFilePath);
+
         DialogLogic logic = new DialogLogic(repository);
 
-        try {//запуск телеграм бот апи
+        TelegramConsultationBot bot = new TelegramConsultationBot(logic, options);
+
+        try {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
 
-            botsApi.registerBot(new TelegramConsultationBot(logic));//регистрация
+            botsApi.registerBot(bot);
 
-            System.out.println("Telegram Bot запущен и готов к работе!");
-
+            System.out.println("Бот успешно запущен!");
         } catch (TelegramApiException e) {
-            System.err.println("Ошибка при запуске Telegram-бота: " + e.getMessage());
             e.printStackTrace();
         }
     }
