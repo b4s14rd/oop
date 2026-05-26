@@ -9,9 +9,6 @@ out/
 ### Тут будет Maven-дубликат кода ###
 target/
 
-### :( ###
-proxy.properties
-ProxyConfig.java
 
 ###Лишние файлы, которые пока что не используются###
 leads.db

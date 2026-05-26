@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileInputStream;
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
 import java.net.URI;
@@ -7,6 +8,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.util.Properties;
 
 public class SpeechToTextService {
     private static final String HF_API_TOKEN = System.getenv("HF_API_TOKEN");
@@ -15,11 +17,24 @@ public class SpeechToTextService {
     private final HttpClient client;
 
     public SpeechToTextService() {
-        this.client = HttpClient.newBuilder()
+        HttpClient.Builder builder = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
-                .proxy(ProxySelector.of(new InetSocketAddress("127.0.0.1", 10808)))
-                .connectTimeout(Duration.ofSeconds(30))
-                .build();
+                .connectTimeout(Duration.ofSeconds(30));
+
+        Properties props = new Properties();
+        try (FileInputStream fis = new FileInputStream("proxy.properties")) {
+            props.load(fis);
+            String host = props.getProperty("proxy.host");
+            String portStr = props.getProperty("proxy.port");
+            if (host != null && portStr != null) {
+                int port = Integer.parseInt(portStr.trim());
+                builder.proxy(ProxySelector.of(new InetSocketAddress(host, port)));
+            }
+        } catch (Exception e) {
+            System.out.println("No proxy configuration applied for SpeechToTextService.");
+        }
+
+        this.client = builder.build();
     }
 
     public String transcribe(File audioFile) {
@@ -37,7 +52,7 @@ public class SpeechToTextService {
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(API_URL))
-                    .header("User-Agent", "curl/8.18.0") // Наш "пропуск" через роутер
+                    .header("User-Agent", "curl/8.18.0")
                     .header("Authorization", "Bearer " + cleanToken)
                     .header("Accept", "application/json")
                     .header("Content-Type", contentType)
