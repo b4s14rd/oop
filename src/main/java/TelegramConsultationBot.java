@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +13,12 @@ import java.util.List;
 public class TelegramConsultationBot extends TelegramLongPollingBot {//основной класс тг бота, обрабатывающий входящие сообщения и использующий DialogLogic для получения ответов
 
     private final DialogLogic dialogLogic;
+    private final SpeechToTextService sttService = new SpeechToTextService();
     private static final String BOT_TOKEN = System.getenv("BOT_TOKEN");
     private static final String BOT_USERNAME = System.getenv("BOT_USERNAME");
 
-    public TelegramConsultationBot(DialogLogic dialogLogic) {
+    public TelegramConsultationBot(DialogLogic dialogLogic, DefaultBotOptions options) {
+        super(options);
         this.dialogLogic = dialogLogic;
     }
 
@@ -30,23 +33,53 @@ public class TelegramConsultationBot extends TelegramLongPollingBot {//осно�
     }
 
     @Override
-    public void onUpdateReceived(Update update) {//метод вызывается каждый раз когда приходит новое сообщение или кнопка
-        if (update.hasMessage() && update.getMessage().hasText()) {//проверяем, что это сообщение, и что оно содержит текст
+    public void onUpdateReceived(Update update) {
+        if (!update.hasMessage()) return;
+
+        long chatId = update.getMessage().getChatId();
+        String username = update.getMessage().getFrom().getUserName();
+        if (username == null) username = String.valueOf(chatId);
+
+        if (update.getMessage().hasText()) {
             String userInput = update.getMessage().getText();
-            long chatId = update.getMessage().getChatId();
 
-            String username = update.getMessage().getFrom().getUserName();//получаем имя пользователя для анкеты
-            if (username == null) {//если юза нет, используем chatId
-                username = String.valueOf(chatId);
-            }
-
-            if (userInput.equalsIgnoreCase("/start")) {//отправляем приветственное сообщение и список вопросов при старте
-                sendResponse(chatId, new BotResponse(dialogLogic.getWelcomeMessage()));//сразу после приветствия предлагаем записаться на курс
+            if (userInput.equalsIgnoreCase("/start")) {
+                sendResponse(chatId, new BotResponse(dialogLogic.getWelcomeMessage()));
                 sendResponse(chatId, dialogLogic.askForCourseEnrollment());
-            } else {//обрабатываем ввод через DialogLogic
-                BotResponse botResponse = dialogLogic.processInput(userInput, chatId, username);//передаем чатид и юз в логику для обработки анкеты
-                sendResponse(chatId, botResponse);//полученный ответ передается в метод sendResponse()
+            } else {
+                handleInput(userInput, chatId, username);
             }
+        }
+        else if (update.getMessage().hasVoice()) {
+            sendResponse(chatId, new BotResponse("<i>Расшифровываю ваше сообщение...</i>"));
+
+            String recognizedText = processVoiceMessage(update.getMessage().getVoice());
+            handleInput(recognizedText, chatId, username);
+        }
+    }
+
+    private void handleInput(String text, long chatId, String username) {
+        BotResponse botResponse = dialogLogic.processInput(text, chatId, username);
+        sendResponse(chatId, botResponse);
+    }
+
+    private String processVoiceMessage(org.telegram.telegrambots.meta.api.objects.Voice voice) {
+        try {
+            org.telegram.telegrambots.meta.api.methods.GetFile getFileMethod = new org.telegram.telegrambots.meta.api.methods.GetFile();
+            getFileMethod.setFileId(voice.getFileId());
+            org.telegram.telegrambots.meta.api.objects.File file = execute(getFileMethod);
+
+            java.io.File tempAudioFile = downloadFile(file);
+
+            String transcription = sttService.transcribe(tempAudioFile);
+
+            tempAudioFile.delete();
+
+            return transcription;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Ошибка при обработке голосового сообщения.";
         }
     }
 
